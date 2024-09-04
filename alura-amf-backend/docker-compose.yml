@@ -1,0 +1,10 @@
+services:
+  database:
+    image: postgres
+    container_name: alura-amf
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: alura-amf-db
+      POSTGRES_PASSWORD: postgres
+    ports: 
+    - "5432:5432"
