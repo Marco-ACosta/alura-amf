@@ -1,14 +1,20 @@
 import db from '@adonisjs/lucid/services/db'
 import {
+  ChangePasswordType,
   ChangeProfessorInfoType,
   CreateProfessorType,
   StoreProfessorType,
   UpdateProfessorType,
+  VerificationCodeType,
 } from '../utils/types.js'
 import Professor from '#models/professor'
 import profile_service from './profile_service.js'
 import { getUnixTime } from 'date-fns'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
+import helpers from '../utils/helpers.js'
+import app from '@adonisjs/core/services/app'
+import fs from 'node:fs'
+import { ProfessorEmailSubjects } from '../utils/consts.js'
 
 export default {
   async CreateProfessor(data: CreateProfessorType) {
@@ -146,13 +152,69 @@ export default {
       await this.SaveProfessor(professorData, id, trx)
       await profile_service.UpdateProfile(professor.profileId, dataProfile, trx)
     })
+    return professor
   },
 
   async SaveProfessor(
-    data: CreateProfessorType | UpdateProfessorType | ChangeProfessorInfoType,
+    data:
+      | CreateProfessorType
+      | UpdateProfessorType
+      | ChangeProfessorInfoType
+      | ChangePasswordType
+      | VerificationCodeType,
     id: string,
     trx: TransactionClientContract
   ) {
     await Professor.updateOrCreate({ id: id }, { ...data }, { client: trx })
+  },
+
+  async SetProfessorPassword(id: string, data: ChangePasswordType) {
+    await db.transaction(async (trx) => {
+      await this.SaveProfessor(data, id, trx)
+    })
+  },
+
+  async GetProfessorByEmail(email: string) {
+    return await Professor.query().where('email', email).preload('profile').firstOrFail()
+  },
+
+  async UpdateVerificationCode(id: string) {
+    await db.transaction(async (trx) => {
+      const code = helpers.getValidationCode()
+      await this.SaveProfessor({ verificationCode: code }, id, trx)
+    })
+  },
+
+  async LogOutProfessor(professor: Professor) {
+    await db.transaction(async () => {
+      const tokens = await Professor.accessTokens.all(professor)
+      tokens.map(async (token) => {
+        await Professor.accessTokens.delete(professor, token.identifier)
+      })
+    })
+  },
+
+  async SendProfessorForgotPasswordEmail(email: string, name: string, code: string, id: string) {
+    const filePath = app.makePath('emails', 'professor-forgot-password-email.html')
+    const fileContent = await fs.promises.readFile(filePath, 'utf8')
+    const url = `http://localhost:3333/api/professor/${id}/set-password/${code}`
+    const emailContent = fileContent.replace('{{name}}', name).replace('{{url}}', url)
+    await helpers.sendEmail(
+      email,
+      ProfessorEmailSubjects.PROFESSOR_FORGOT_PASSWORD_EMAIL,
+      emailContent
+    )
+  },
+
+  async SendProfessorConfirmationEmail(email: string, name: string, code: string, id: string) {
+    const filePath = app.makePath('emails', 'professor-confirmation-email.html')
+    const fileContent = await fs.promises.readFile(filePath, 'utf8')
+    const url = `http://localhost:3333/api/professor/${id}/set-password/${code}`
+    const emailContent = fileContent.replace('{{name}}', name).replace('{{url}}', url)
+    await helpers.sendEmail(
+      email,
+      ProfessorEmailSubjects.PROFESSOR_CONFIRMATION_EMAIL,
+      emailContent
+    )
   },
 }

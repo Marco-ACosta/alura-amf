@@ -20,7 +20,6 @@ export const adminStoreValidator = vine.compile(
     email: vine
       .string()
       .email()
-      .normalizeEmail()
       .unique(async (db, value) => {
         return !(await db.from('admins').where('email', value).first())
       }),
@@ -39,7 +38,6 @@ export const adminUpdateValidator = vine.compile(
     email: vine
       .string()
       .email()
-      .normalizeEmail()
       .unique(async (db, value, field) => {
         return !(await db
           .from('admins')
@@ -67,7 +65,6 @@ export const forgotPassword = vine.compile(
     email: vine
       .string()
       .email()
-      .normalizeEmail()
       .exists(async (db, value) => {
         return await db.from('admins').where('email', value).first()
       }),

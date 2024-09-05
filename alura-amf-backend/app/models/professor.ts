@@ -27,6 +27,9 @@ export default class Professor extends compose(BaseModel, AuthFinder) {
   @column()
   declare email: string
 
+  @column()
+  declare verificationCode?: string | null
+
   @column({ serializeAs: null })
   declare password: string
 

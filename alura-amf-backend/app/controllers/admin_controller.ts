@@ -38,6 +38,7 @@ export default class AdminController {
       success: [{ message: 'Logout realizado com sucesso.', status: 200 }],
     })
   }
+  /*ADICIONAR MÉTODO PARA ENVIO DE EMAIL para professores e estudantes*/
 
   /**
    * Handle the creation of a new admin, student or professor.
@@ -50,13 +51,24 @@ export default class AdminController {
     if (type === 'admin') {
       const data = await request.validateUsing(adminStoreValidator)
       const { admin } = await admin_service.CreateAdmin({ ...data, type })
-      await admin_service.SendAdminConfirmationEmail(data.email, data.name, admin.verificationCode!)
+      await admin_service.SendAdminConfirmationEmail(
+        admin.email,
+        data.name,
+        admin.verificationCode!,
+        admin.id
+      )
       return response.ok({ success: [{ message: 'Admin criado com sucesso.', status: 200 }] })
     }
 
     if (type === 'professor') {
       const data = await request.validateUsing(professorStoreValidator)
-      await professor_service.CreateProfessor({ ...data, type })
+      const { professor } = await professor_service.CreateProfessor({ ...data, type })
+      await professor_service.SendProfessorConfirmationEmail(
+        data.email,
+        data.name,
+        professor.verificationCode!,
+        professor.id
+      )
       return response.ok({ success: [{ message: 'Professor criado com sucesso.', status: 200 }] })
     }
 
@@ -92,9 +104,10 @@ export default class AdminController {
     const { id, code } = params
     const data = await request.validateUsing(setPasswordValidator)
     const admin = await admin_service.GetAdmin(id)
-
     if (admin.verificationCode !== code) {
-      throw new Error('Código de verificação inválido.')
+      return response.badRequest({
+        errors: [{ message: 'Código de verificação inválido.', status: 400 }],
+      })
     }
 
     admin_service.SetAdminPassword(admin.id, { ...data, verificationCode: null })
@@ -107,7 +120,9 @@ export default class AdminController {
     const admin = await admin_service.GetAdmin(id)
 
     if (!(await hash.verify(admin.password, data.oldPassword))) {
-      throw new Error('Senha não coincide com a atual.')
+      return response.badRequest({
+        errors: [{ message: 'Senha não coincide com a atual.', status: 400 }],
+      })
     }
 
     await admin_service.SetAdminPassword(admin.id, { password: data.newPassword })
@@ -121,7 +136,8 @@ export default class AdminController {
     await admin_service.SendAdminForgotPasswordEmail(
       email,
       admin.profile.name,
-      admin.verificationCode!
+      admin.verificationCode!,
+      admin.id
     )
     await admin_service.LogOutAdmin(admin)
     return response.ok({ success: [{ message: 'Email enviado com sucesso.', status: 200 }] })

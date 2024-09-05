@@ -190,23 +190,29 @@ export default {
     })
   },
 
-  async SendAdminConfirmationEmail(email: string, name: string, code: string): Promise<void> {
+  async SendAdminConfirmationEmail(
+    email: string,
+    name: string,
+    code: string,
+    id: string
+  ): Promise<void> {
     const filePath = app.makePath('emails', 'admin-confirmation-email.html')
     const fileContent = await fs.promises.readFile(filePath, 'utf8')
-    const emailContent = fileContent
-      .replace('{{code}}', code)
-      .replace('{{email}}', email)
-      .replace('{{name}}', name)
+    const url = `http://localhost:3333/api/admin/${id}/set-password/${code}`
+    const emailContent = fileContent.replace('{{name}}', name).replace('{{url}}', url)
     await helpers.sendEmail(email, AdminEmailSubjects.ADMIN_CONFIRMATION_EMAIL, emailContent)
   },
 
-  async SendAdminForgotPasswordEmail(email: string, name: string, code: string): Promise<void> {
+  async SendAdminForgotPasswordEmail(
+    email: string,
+    name: string,
+    code: string,
+    id: string
+  ): Promise<void> {
     const filePath = app.makePath('emails', 'admin-forgot-password-email.html')
     const fileContent = await fs.promises.readFile(filePath, 'utf8')
-    const emailContent = fileContent
-      .replace('{{code}}', code)
-      .replace('{{email}}', email)
-      .replace('{{name}}', name)
+    const url = `http://localhost:3333/api/admin/${id}/set-password/${code}`
+    const emailContent = fileContent.replace('{{name}}', name).replace('{{url}}', url)
     await helpers.sendEmail(email, AdminEmailSubjects.ADMIN_FORGOT_PASSWORD_EMAIL, emailContent)
   },
 

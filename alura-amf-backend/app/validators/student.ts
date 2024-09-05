@@ -27,7 +27,6 @@ export const studentStoreValidator = vine.compile(
     email: vine
       .string()
       .email()
-      .normalizeEmail()
       .unique(async (db, value) => {
         return !(await db.from('professors').where('email', value).first())
       }),
