@@ -39,7 +39,6 @@ export type CreateAdminType = {
 
 export type StoreProfessorType = {
   email: string
-  password: string
   cpf: string
   lattes: string
   profileId: string
@@ -51,7 +50,6 @@ export type CreateProfessorType = {
   phone: string
   type: string
   email: string
-  password: string
   lattes: string
   cpf: string
 }

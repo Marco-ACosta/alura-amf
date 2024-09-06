@@ -30,10 +30,6 @@ export const professorStoreValidator = vine.compile(
       .unique(async (db, value) => {
         return !(await db.from('professors').where('email', value).first())
       }),
-    password: vine
-      .string()
-      .minLength(8)
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[A-Za-z\d\W]{8,}$/),
   })
 )
 

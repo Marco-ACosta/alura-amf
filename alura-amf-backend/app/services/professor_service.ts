@@ -27,10 +27,10 @@ export default {
 
     const professorData = {
       email: data.email,
-      password: data.password,
       cpf: data.cpf,
       lattes: data.lattes,
       profileId: profile.id,
+      verificationCode: helpers.getValidationCode(),
     }
 
     const professor = await this.StoreProfessor(professorData)
