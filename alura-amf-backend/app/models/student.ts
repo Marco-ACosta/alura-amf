@@ -31,6 +31,9 @@ export default class Student extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
+  @column()
+  declare verificationCode?: string | null
+
   @belongsTo(() => Profile)
   declare profile: BelongsTo<typeof Profile>
 

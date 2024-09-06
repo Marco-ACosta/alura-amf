@@ -38,7 +38,6 @@ export default class AdminController {
       success: [{ message: 'Logout realizado com sucesso.', status: 200 }],
     })
   }
-  /*ADICIONAR MÉTODO PARA ENVIO DE EMAIL para professores e estudantes*/
 
   /**
    * Handle the creation of a new admin, student or professor.
@@ -74,7 +73,13 @@ export default class AdminController {
 
     if (type === 'student') {
       const data = await request.validateUsing(studentStoreValidator)
-      await student_service.CreateStudent({ ...data, type })
+      const { student } = await student_service.CreateStudent({ ...data, type })
+      await student_service.SendStudentConfirmationEmail(
+        data.email,
+        data.name,
+        student.verificationCode!,
+        student.id
+      )
       return response.ok({ success: [{ message: 'Estudante criado com sucesso.', status: 200 }] })
     }
   }

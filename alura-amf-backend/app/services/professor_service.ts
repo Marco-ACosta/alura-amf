@@ -79,7 +79,7 @@ export default {
     isActive?: boolean
   ) {
     const professors = await Professor.query()
-      .whereHas('profile', (query) => query.where('isActive', true).andWhereNull('deletedAt'))
+      .whereHas('profile', (query) => query.whereNull('deletedAt'))
       .preload('profile')
       .join('profiles', 'professors.profile_id', 'profiles.id')
       .select(
@@ -92,7 +92,9 @@ export default {
         'professors.profile_id'
       )
       .if(search, (query) =>
-        query.where('name', 'like', `%${search}%`).orWhere('lastName', 'like', `%${search}%`)
+        query
+          .where('profiles.name', 'like', `%${search}%`)
+          .orWhere('profiles.last_name', 'like', `%${search}%`)
       )
       .if(column === 'name' || column === 'isActive', (query) =>
         query.orderBy(`profiles.${column}`, direction)

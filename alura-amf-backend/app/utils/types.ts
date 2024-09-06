@@ -127,3 +127,18 @@ export type ChangeProfessorInfoType = {
   lattes: string
   cpf: string
 }
+
+export type UpdateStudentType = {
+  name: string
+  lastName: string
+  phone: string
+  email: string
+  academicRegister: string
+  cpf: string
+}
+
+export type ChangeStudentInfoType = {
+  email: string
+  academicRegister: string
+  cpf: string
+}

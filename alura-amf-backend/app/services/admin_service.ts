@@ -75,7 +75,7 @@ export default {
     isActive?: boolean
   ) {
     const admins = await Admin.query()
-      .whereHas('profile', (query) => query.where('isActive', true).andWhereNull('deletedAt'))
+      .whereHas('profile', (query) => query.whereNull('deletedAt'))
       .preload('profile')
       .join('profiles', 'admins.profile_id', 'profiles.id')
       .select(
@@ -87,7 +87,9 @@ export default {
         'admins.profile_id'
       )
       .if(search, (query) =>
-        query.where('name', 'like', `%${search}%`).orWhere('lastName', 'like', `%${search}%`)
+        query
+          .where('profiles.name', 'like', `%${search}%`)
+          .orWhere('profiles.last_name', 'like', `%${search}%`)
       )
       .if(column === 'email', (query) => query.orderBy(column, direction))
       .if(column === 'name' || column === 'isActive', (query) =>
