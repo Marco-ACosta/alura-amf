@@ -56,7 +56,6 @@ export type CreateProfessorType = {
 
 export type StoreStudentType = {
   email: string
-  password: string
   cpf: string
   profileId: string
   academicRegister: string
@@ -68,7 +67,6 @@ export type CreateStudentType = {
   phone: string
   type: string
   email: string
-  password: string
   academicRegister: string
   cpf: string
 }

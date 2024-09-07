@@ -29,8 +29,8 @@ export default class StudentsController {
     const { column = 'name', direction = 'asc' } = qs
     const { search } = qs
     const { isActive } = qs
-
-    return await student_service.ListStudent(page, limit, column, direction, search, isActive)
+    console.log('teste')
+    return await student_service.ListStudent(column, direction, page, limit, isActive, search)
   }
 
   async show({ params }: HttpContext) {

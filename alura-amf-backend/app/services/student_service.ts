@@ -27,10 +27,10 @@ export default {
 
     const studentData = {
       email: data.email,
-      password: data.password,
       academicRegister: data.academicRegister,
       cpf: data.cpf,
       profileId: profile.id,
+      verificationCode: helpers.getValidationCode(),
     }
 
     const student = await this.StoreStudent(studentData)
@@ -80,12 +80,12 @@ export default {
   },
 
   async ListStudent(
-    search: string,
     column: string,
     direction: 'asc' | 'desc',
     page: number,
     limit: number,
-    isActive?: boolean
+    isActive?: boolean,
+    search?: string
   ) {
     const students = await Student.query()
       .whereHas('profile', (query) => query.whereNull('deletedAt'))
@@ -111,19 +111,20 @@ export default {
       .if(column === 'email' || column === 'academicRegister', (query) =>
         query.orderBy(column, direction)
       )
-      .if(isActive, (query) => query.where('profile.isActive', isActive!))
+      .if(isActive === true || isActive === false, (query) =>
+        query.where('profile.isActive', isActive!)
+      )
       .paginate(page, limit)
-
     const { data, meta } = students.serialize()
 
     return {
       meta,
       data: data.map((student) => ({
         id: student.id,
-        name: student.name + ' ' + student.lastName,
+        name: student.profile.name + ' ' + student.profile.lastName,
         email: student.email,
-        academicRegister: student.academic_register,
-        isActive: student.is_active,
+        academicRegister: student.academicRegister,
+        isActive: student.profile.isActive,
       })),
     }
   },
