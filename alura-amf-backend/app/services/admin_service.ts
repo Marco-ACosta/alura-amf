@@ -177,7 +177,6 @@ export default {
   async DestroyAdmin(id: string) {
     await db.transaction(async (trx) => {
       const admin = await this.GetAdmin(id)
-      console.log(admin)
       await profile_service.DestroyProfile(admin.profileId, trx)
       await Admin.query({ client: trx }).where('id', id).delete()
     })
