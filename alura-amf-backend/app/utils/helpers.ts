@@ -39,4 +39,15 @@ export default {
         .html(html)
     })
   },
+
+  slugFy(text: string) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '')
+  },
 }

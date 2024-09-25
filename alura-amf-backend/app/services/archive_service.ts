@@ -16,10 +16,10 @@ export default {
       const { fileName, filePath } = await this.moveFileToServer(file)
       return Archive.create(
         {
-          file_name: fileName,
-          file_path: filePath,
-          file_type: file.extname!,
-          file_size: file.size,
+          fileName: fileName,
+          filePath: filePath,
+          fileType: file.extname!,
+          fileSize: file.size,
         },
         { client: transaction }
       )
@@ -87,7 +87,7 @@ export default {
   async deleteOne(archiveId: string) {
     await db.transaction(async (trx) => {
       const archive = await this.getArchiveById(archiveId)
-      await this.removeArchiveFile(archive.file_path)
+      await this.removeArchiveFile(archive.filePath)
       await archive.useTransaction(trx).delete()
     })
   },

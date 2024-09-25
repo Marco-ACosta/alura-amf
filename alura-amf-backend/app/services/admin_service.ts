@@ -61,9 +61,7 @@ export default {
    * @returns The created admin user.
    */
   async StoreAdmin(adminData: StoreAdminType) {
-    return await db.transaction(async (trx) => {
-      return await Admin.create(adminData, { client: trx })
-    })
+    return await db.transaction(async (trx) => await Admin.create(adminData, { client: trx }))
   },
 
   async ListAdmins(
@@ -169,14 +167,15 @@ export default {
     const admin = await this.GetAdmin(id)
     const deletedAt = getUnixTime(new Date())
     const isActive = false
-    await db.transaction(async (trx) => {
-      await profile_service.UpdateProfile(admin.profileId, { isActive, deletedAt }, trx)
-    })
+    await db.transaction(
+      async (trx) =>
+        await profile_service.UpdateProfile(admin.profileId, { isActive, deletedAt }, trx)
+    )
   },
 
   async DestroyAdmin(id: string) {
+    const admin = await this.GetAdmin(id)
     await db.transaction(async (trx) => {
-      const admin = await this.GetAdmin(id)
       await profile_service.DestroyProfile(admin.profileId, trx)
       await Admin.query({ client: trx }).where('id', id).delete()
     })
@@ -218,16 +217,14 @@ export default {
   },
 
   async SetAdminPassword(adminId: string, data: ChangePasswordType) {
-    await db.transaction(async (trx) => {
-      await this.SaveAdmin(adminId, data, trx)
-    })
+    await db.transaction(async (trx) => await this.SaveAdmin(adminId, data, trx))
   },
 
   async UpdateValidationCode(adminId: string) {
-    await db.transaction(async (trx) => {
-      const code = helpers.getValidationCode()
-      await this.SaveAdmin(adminId, { verificationCode: code }, trx)
-    })
+    const code = helpers.getValidationCode()
+    await db.transaction(
+      async (trx) => await this.SaveAdmin(adminId, { verificationCode: code }, trx)
+    )
   },
 
   async LogOutAdmin(admin: Admin) {
@@ -240,8 +237,8 @@ export default {
   },
 
   async TerminateAdminSession(admin: Admin) {
-    await db.transaction(async () => {
+    await db.transaction(async () =>
       Admin.accessTokens.delete(admin, admin.currentAccessToken!.identifier)
-    })
+    )
   },
 }

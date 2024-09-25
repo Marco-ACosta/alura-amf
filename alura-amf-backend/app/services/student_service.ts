@@ -38,9 +38,7 @@ export default {
   },
 
   async StoreStudent(data: StoreStudentType) {
-    return await db.transaction(async (trx) => {
-      return await Student.create(data, { client: trx })
-    })
+    return await db.transaction(async (trx) => await Student.create(data, { client: trx }))
   },
 
   async GetStudent(id: string) {
@@ -51,32 +49,34 @@ export default {
     const student = await this.GetStudent(id)
     const deletedAt = getUnixTime(new Date())
     const isActive = false
-    await db.transaction(async (trx) => {
-      await profile_service.UpdateProfile(student.profileId, { isActive, deletedAt }, trx)
-    })
+    await db.transaction(
+      async (trx) =>
+        await profile_service.UpdateProfile(student.profileId, { isActive, deletedAt }, trx)
+    )
   },
 
   async DestroyStudent(id: string) {
+    const student = await this.GetStudent(id)
     await db.transaction(async (trx) => {
-      const student = await this.GetStudent(id)
       await profile_service.DestroyProfile(student.profileId, trx)
       await Student.query({ client: trx }).where('id', id).delete()
     })
   },
 
   async RestoreStudent(id: string) {
-    await db.transaction(async (trx) => {
-      const student = await this.GetStudent(id)
-      const deletedAt = null
-      const isActive = true
-      await profile_service.UpdateProfile(student.profileId, { isActive, deletedAt }, trx)
-    })
+    const student = await this.GetStudent(id)
+    const deletedAt = null
+    const isActive = true
+    await db.transaction(
+      async (trx) =>
+        await profile_service.UpdateProfile(student.profileId, { isActive, deletedAt }, trx)
+    )
   },
 
   async TerminateStudentSession(student: Student) {
-    await db.transaction(async () => {
+    await db.transaction(async () =>
       Student.accessTokens.delete(student, student.currentAccessToken!.identifier)
-    })
+    )
   },
 
   async ListStudent(
@@ -173,9 +173,7 @@ export default {
   },
 
   async SetStudentPassword(id: string, data: ChangePasswordType) {
-    await db.transaction(async (trx) => {
-      await this.SaveStudent(data, id, trx)
-    })
+    await db.transaction(async (trx) => await this.SaveStudent(data, id, trx))
   },
 
   async GetStudentByEmail(email: string) {
@@ -199,10 +197,8 @@ export default {
   },
 
   async UpdateVerificationCode(id: string) {
-    await db.transaction(async (trx) => {
-      const code = helpers.getValidationCode()
-      await this.SaveStudent({ verificationCode: code }, id, trx)
-    })
+    const code = helpers.getValidationCode()
+    await db.transaction(async (trx) => await this.SaveStudent({ verificationCode: code }, id, trx))
   },
 
   async LogOutStudent(student: Student) {

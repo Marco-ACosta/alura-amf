@@ -16,9 +16,7 @@ export default {
   },
 
   async StoreProfile(profileData: StoreProfileType): Promise<Profile> {
-    return await db.transaction(async (trx) => {
-      return await Profile.create(profileData, { client: trx })
-    })
+    return await db.transaction(async (trx) => await Profile.create(profileData, { client: trx }))
   },
 
   async UpdateProfile(

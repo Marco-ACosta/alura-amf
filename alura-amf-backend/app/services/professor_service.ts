@@ -37,9 +37,7 @@ export default {
     return { professor, profile }
   },
   async StoreProfessor(data: StoreProfessorType) {
-    return await db.transaction(async (trx) => {
-      return await Professor.create(data, { client: trx })
-    })
+    return await db.transaction(async (trx) => await Professor.create(data, { client: trx }))
   },
   async GetProfessor(id: string) {
     return await Professor.query().where('id', id).preload('profile').firstOrFail()
@@ -48,26 +46,28 @@ export default {
     const professor = await this.GetProfessor(id)
     const deletedAt = getUnixTime(new Date())
     const isActive = false
-    await db.transaction(async (trx) => {
-      await profile_service.UpdateProfile(professor.profileId, { isActive, deletedAt }, trx)
-    })
+    await db.transaction(
+      async (trx) =>
+        await profile_service.UpdateProfile(professor.profileId, { isActive, deletedAt }, trx)
+    )
   },
 
   async DestroyProfessor(id: string) {
+    const professor = await this.GetProfessor(id)
     await db.transaction(async (trx) => {
-      const professor = await this.GetProfessor(id)
       await profile_service.DestroyProfile(professor.profileId, trx)
       await Professor.query({ client: trx }).where('id', id).delete()
     })
   },
 
   async RestoreProfessor(id: string) {
-    await db.transaction(async (trx) => {
-      const professor = await this.GetProfessor(id)
-      const deletedAt = null
-      const isActive = true
-      await profile_service.UpdateProfile(professor.profileId, { isActive, deletedAt }, trx)
-    })
+    const professor = await this.GetProfessor(id)
+    const deletedAt = null
+    const isActive = true
+    await db.transaction(
+      async (trx) =>
+        await profile_service.UpdateProfile(professor.profileId, { isActive, deletedAt }, trx)
+    )
   },
 
   async ListProfessor(
@@ -118,9 +118,9 @@ export default {
   },
 
   async TerminateProfessorSession(professor: Professor) {
-    await db.transaction(async () => {
+    await db.transaction(async () =>
       Professor.accessTokens.delete(professor, professor.currentAccessToken!.identifier)
-    })
+    )
   },
 
   async ShowProfessor(id: string) {
@@ -171,9 +171,7 @@ export default {
   },
 
   async SetProfessorPassword(id: string, data: ChangePasswordType) {
-    await db.transaction(async (trx) => {
-      await this.SaveProfessor(data, id, trx)
-    })
+    await db.transaction(async (trx) => await this.SaveProfessor(data, id, trx))
   },
 
   async GetProfessorByEmail(email: string) {
@@ -181,10 +179,10 @@ export default {
   },
 
   async UpdateVerificationCode(id: string) {
-    await db.transaction(async (trx) => {
-      const code = helpers.getValidationCode()
-      await this.SaveProfessor({ verificationCode: code }, id, trx)
-    })
+    const code = helpers.getValidationCode()
+    await db.transaction(
+      async (trx) => await this.SaveProfessor({ verificationCode: code }, id, trx)
+    )
   },
 
   async LogOutProfessor(professor: Professor) {

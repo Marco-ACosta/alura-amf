@@ -141,7 +141,7 @@ export default class VideoService {
 
     const newArchive = await ArchiveService.createOne(archive)
 
-    const newVideoDuration = await this.getVideoDuration(newArchive.file_path)
+    const newVideoDuration = await this.getVideoDuration(newArchive.filePath)
 
     await db.transaction(async (trx) => {
       await video
