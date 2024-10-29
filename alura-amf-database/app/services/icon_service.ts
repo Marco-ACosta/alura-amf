@@ -17,4 +17,17 @@ export default {
   async storeIcon(data: Partial<Icon>) {
     return await db.transaction(async (trx) => await Icon.create(data, { client: trx }))
   },
+
+  async updateIcon(id: string, data: Partial<Icon>) {
+    return await db.transaction(
+      async (trx) => await Icon.updateOrCreate({ id: id }, data, { client: trx })
+    )
+  },
+
+  async editIcon(graduationId: string, file: MultipartFile) {
+    const icon = await Icon.query().where('graduationId', graduationId).firstOrFail()
+    await archive_service.deleteOne(icon.archiveId)
+    const newArchive = await archive_service.createOne(file)
+    await this.updateIcon(icon.id, { archiveId: newArchive.id })
+  },
 }

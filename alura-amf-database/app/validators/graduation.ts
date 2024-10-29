@@ -12,3 +12,14 @@ export const graduationStoreValidator = vine.compile(
     }),
   })
 )
+
+export const graduationUpdateValidator = vine.compile(
+  vine.object({
+    name: vine.string(),
+    color: vine.string().regex(/^#[0-9a-fA-F]{6}$/),
+    description: vine.string(),
+    icon: vine.file({
+      extnames: ['ico', '.svg'],
+    }),
+  })
+)

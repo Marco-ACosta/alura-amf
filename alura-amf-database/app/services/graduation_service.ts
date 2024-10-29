@@ -59,4 +59,11 @@ export default {
       isActive: graduation.isActive,
     }
   },
+
+  async updateGraduation(id: string, data: Partial<Graduation>, file: MultipartFile) {
+    await Graduation.query().where('id', id).update(data)
+    if (file) {
+      await icon_service.editIcon(id, file)
+    }
+  },
 }

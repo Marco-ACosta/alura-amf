@@ -1,4 +1,4 @@
-import { graduationStoreValidator } from '#validators/graduation'
+import { graduationStoreValidator, graduationUpdateValidator } from '#validators/graduation'
 import type { HttpContext } from '@adonisjs/core/http'
 import helpers from '../utils/helpers.js'
 import { getUnixTime } from 'date-fns'
@@ -48,7 +48,19 @@ export default class GraduationsController {
     return response.download(path)
   }
 
-  // async update({ params, request }: HttpContext) {}
+  async update({ params, request }: HttpContext) {
+    const data = await request.validateUsing(graduationUpdateValidator)
+    const graduationData = {
+      name: data.name,
+      color: data.color,
+      description: data.description,
+      slug: helpers.slugFy(data.name),
+      updatedAt: getUnixTime(new Date()),
+    }
+
+    await graduation_service.updateGraduation(params.id, graduationData, data.icon)
+    return { success: [{ message: 'Graduação atualizada com sucesso.', status: 200 }] }
+  }
 
   // async restore({ params }: HttpContext) {}
 
