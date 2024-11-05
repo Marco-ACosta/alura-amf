@@ -10,19 +10,25 @@
 import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 
-const usersController = () => import("#controllers/users_controller")
+const studentsController = () => import('#controllers/students_controller')
 
-router.group(() => {
-  router.get('/', ({ response }) => { response.status(200).send("Projeto Modelo") }),
-
-  router.group(() => {
-    router.post('/', [usersController, 'create']),
-    router.put('/', [usersController, 'update']).use(middleware.auth({ guards: ['api'] })),
-    router.get('/list', [usersController, 'list']).use(middleware.auth({ guards: ['api'] })),
-    router.get('/:id', [usersController, 'get']).use(middleware.auth({ guards: ['api'] })),
-    router.delete('/:id', [usersController, 'delete']).use(middleware.auth({ guards: ['api'] })),
-    router.post('/login', [usersController, 'login'])
+router
+  .group(() => {
+    router
+      .group(() => {
+        router.post('/login', [studentsController, 'login'])
+        router
+          .group(() => {
+            router.post('/logout', [studentsController, 'logout'])
+            router.get('/:id', [studentsController, 'get'])
+            router.put('/:id', [studentsController, 'update'])
+            router.put('/:id/update-password', [studentsController, 'updatePassword'])
+            router.delete('/logout', [studentsController, 'logout'])
+          })
+          .use(middleware.auth({ guards: ['api'] }))
+        router.post('/forgot-password', [studentsController, 'forgotPassword'])
+        router.put('/:id/set-password/:code', [studentsController, 'setPassword'])
+      })
+      .prefix('/student')
   })
-  .prefix('/users')
-})
-.prefix('/api')
+  .prefix('/api')

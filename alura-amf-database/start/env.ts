@@ -31,13 +31,15 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   ADMIN_PASSWORD: Env.schema.string(),
 
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the mail package
+  |----------------------------------------------------------
+  */
+
   SMTP_EMAIL: Env.schema.string(),
-
   SMTP_EMAIL_PASSWORD: Env.schema.string(),
-
   SMTP_HOST: Env.schema.string(),
-
   SMTP_PORT: Env.schema.number(),
-
   SMTP_SECURE: Env.schema.boolean(),
 })
