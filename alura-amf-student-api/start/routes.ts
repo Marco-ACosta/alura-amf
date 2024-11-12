@@ -14,6 +14,7 @@ const studentsController = () => import('#controllers/students_controller')
 
 router
   .group(() => {
+    router.get('/', () => 'Hello world')
     router
       .group(() => {
         router.post('/login', [studentsController, 'login'])

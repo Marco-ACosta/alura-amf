@@ -20,26 +20,37 @@ export default class UserController {
     const id = params.id
     const student = await request.validateUsing(updateStudentValidator)
     await this.studentService.Update({ ...student, id })
-    response.status(201).json('Estudante atualizado com sucesso.')
+    response.json({ success: [{ message: 'Estudante atualizado com sucesso', status: 201 }] })
   }
 
   async get({ params }: HttpContext): Promise<Student | null> {
     const { id } = params
     const student = await this.studentService.Get(id)
     if (!student) throw new CustomException(404, 'Estudante não encontrado.')
-    return student!
+    return student
   }
 
   async login({ request }: HttpContext) {
-    const { email, password } = await request.validateUsing(loginValidator)
-    const student = await Student.verifyCredentials(email, password)
+    const dataAuth = await request.validateUsing(loginValidator)
+
+    const student = await Student.verifyCredentials(dataAuth.email, dataAuth.password)
     const token = await Student.accessTokens.create(student)
-    return token
+
+    const data = {
+      token: token.value?.release(),
+      userId: student.id,
+      type: 'bearer',
+      abilities: token.abilities,
+      expiresAt: token.expiresAt,
+    }
+    return { data }
   }
 
   async logout({ auth }: HttpContext) {
     const student = await auth.authenticate()
     await this.studentService.LogOut(student)
+
+    return { success: [{ message: 'Logout realizado com sucesso', status: 200 }] }
   }
 
   async setPassword({ params, request, response }: HttpContext) {
@@ -48,18 +59,19 @@ export default class UserController {
     const student = await this.studentService.Get(id)
     if (!student) throw new CustomException(404, 'Estudante não encontrado.')
 
-    if (student.verificationCode !== code)
+    if (student.verificationCode !== code) {
       throw new CustomException(400, 'Código de verificação inválido.')
-    console.log(student.verificationCode, code)
-    console.log({ data })
+    }
+
     await this.studentService.SetStudentPassword(student, { verificationCode: null, ...data })
+
     return response.ok({ success: [{ message: 'Senha atualizada com sucesso', status: 200 }] })
   }
 
   async updatePassword({ params, request, response }: HttpContext) {
     const { id } = params
     const data = await request.validateUsing(changePasswordValidator)
-    const student = await this.get(id)
+    const student = await this.studentService.Get(id)
 
     if (!student) throw new CustomException(404, 'Estudante não encontrado.')
 
