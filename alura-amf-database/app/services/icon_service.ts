@@ -5,7 +5,7 @@ import { MultipartFile } from '@adonisjs/core/bodyparser'
 
 export default {
   async createIcon(graduationId: string, file: MultipartFile) {
-    const archive = await archive_service.createOne(file)
+    const archive = await archive_service.createOne(file, 'icons')
     const data = {
       graduationId,
       archiveId: archive.id,
@@ -26,8 +26,13 @@ export default {
 
   async editIcon(graduationId: string, file: MultipartFile) {
     const icon = await Icon.query().where('graduationId', graduationId).firstOrFail()
-    await archive_service.deleteOne(icon.archiveId)
-    const newArchive = await archive_service.createOne(file)
+    const newArchive = await archive_service.createOne(file, 'icons')
     await this.updateIcon(icon.id, { archiveId: newArchive.id })
+    await archive_service.deleteOne(icon.archiveId)
+  },
+
+  async deleteIcon(id: string, archiveId: string) {
+    await Icon.query().where('archiveId', id).delete()
+    await archive_service.deleteOne(archiveId)
   },
 }

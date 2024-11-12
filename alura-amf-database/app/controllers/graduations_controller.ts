@@ -55,16 +55,27 @@ export default class GraduationsController {
       color: data.color,
       description: data.description,
       slug: helpers.slugFy(data.name),
-      updatedAt: getUnixTime(new Date()),
     }
-
     await graduation_service.updateGraduation(params.id, graduationData, data.icon)
+    console.log({ graduationData })
     return { success: [{ message: 'Graduação atualizada com sucesso.', status: 200 }] }
   }
 
-  // async restore({ params }: HttpContext) {}
+  async delete({ params }: HttpContext) {
+    const { id } = params
+    await graduation_service.deleteGraduation(id)
+    return { success: [{ message: 'Graduação excluída com sucesso.', status: 200 }] }
+  }
 
-  // async destroy({ params }: HttpContext) {}
+  async restore({ params }: HttpContext) {
+    const { id } = params
+    await graduation_service.restoreGraduation(id)
+    return { success: [{ message: 'Graduação recuperada com sucesso.', status: 200 }] }
+  }
 
-  // async delete({ params }: HttpContext) {}
+  async destroy({ params }: HttpContext) {
+    const { id } = params
+    await graduation_service.destroyGraduation(id)
+    return { success: [{ message: 'Graduação excluida com sucesso.', status: 200 }] }
+  }
 }

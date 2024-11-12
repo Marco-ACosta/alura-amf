@@ -11,9 +11,9 @@ export default {
    * @param file - The uploaded file
    * @returns A promise that resolves when the archive record is created and the file is stored on the server.
    */
-  async createOne(file: MultipartFile): Promise<Archive> {
+  async createOne(file: MultipartFile, type: string): Promise<Archive> {
     return db.transaction(async (transaction) => {
-      const { fileName, filePath } = await this.moveFileToServer(file)
+      const { fileName, filePath } = await this.moveFileToServer(file, type)
       return Archive.create(
         {
           fileName: fileName,
@@ -33,13 +33,14 @@ export default {
    * @returns A promise that resolves when the file is moved and the object with the filename and filepath is returned.
    */
   async moveFileToServer(
-    uploadedFile: MultipartFile
+    uploadedFile: MultipartFile,
+    type: string
   ): Promise<{ fileName: string; filePath: string }> {
     const timestamp = Date.now()
     const fileName = `${timestamp}.${uploadedFile.extname}`
-    const filePath = 'uploads/videos/' + fileName
+    const filePath = `uploads/${type}/` + fileName
 
-    uploadedFile.move(app.makePath('uploads/videos'), { name: fileName })
+    uploadedFile.move(app.makePath(`uploads/${type}`), { name: fileName })
     return { fileName, filePath }
   },
 

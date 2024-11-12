@@ -2,7 +2,7 @@ import Graduation from '#models/graduation'
 import db from '@adonisjs/lucid/services/db'
 import icon_service from './icon_service.js'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
-import { format } from 'date-fns'
+import { format, getUnixTime } from 'date-fns'
 
 export default {
   async createGraduation(data: Partial<Graduation>, file: MultipartFile) {
@@ -60,10 +60,25 @@ export default {
     }
   },
 
-  async updateGraduation(id: string, data: Partial<Graduation>, file: MultipartFile) {
+  async updateGraduation(id: string, data: Partial<Graduation>, file?: MultipartFile) {
     await Graduation.query().where('id', id).update(data)
+
     if (file) {
       await icon_service.editIcon(id, file)
     }
+  },
+
+  async deleteGraduation(id: string) {
+    await this.updateGraduation(id, { deletedAt: getUnixTime(new Date()), isActive: false })
+  },
+
+  async restoreGraduation(id: string) {
+    await this.updateGraduation(id, { deletedAt: null, isActive: true })
+  },
+
+  async destroyGraduation(id: string) {
+    const graduation = await this.getOneGraduation(id)
+    await icon_service.deleteIcon(graduation.icon.id, graduation.icon.archive.id)
+    await Graduation.query().where('id', id).delete()
   },
 }

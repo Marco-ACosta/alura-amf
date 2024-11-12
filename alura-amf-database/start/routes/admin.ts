@@ -27,4 +27,4 @@ router
         })
       )
   })
-  .prefix('/admin')
+  .prefix('/api/admin')
