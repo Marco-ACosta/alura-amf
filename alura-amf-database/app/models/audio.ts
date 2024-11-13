@@ -1,4 +1,7 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import Content from '#models/content'
+import Archive from '#models/archive'
 
 export default class Audio extends BaseModel {
   @column({ isPrimary: true })
@@ -18,4 +21,10 @@ export default class Audio extends BaseModel {
 
   @column()
   declare duration: number
+
+  @belongsTo(() => Content)
+  declare content: BelongsTo<typeof Content>
+
+  @belongsTo(() => Archive)
+  declare archive: BelongsTo<typeof Archive>
 }
