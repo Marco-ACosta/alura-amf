@@ -2,6 +2,7 @@ import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
 import Video from '#models/video'
 import Article from '#models/article'
 import Audio from '#models/audio'
+import Thumbnail from '#models/thumbnail'
 import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 export default class Archive extends BaseModel {
@@ -34,4 +35,7 @@ export default class Archive extends BaseModel {
 
   @hasOne(() => Audio)
   declare audio: HasOne<typeof Audio>
+
+  @hasOne(() => Thumbnail)
+  declare thumbnail: HasOne<typeof Thumbnail>
 }
