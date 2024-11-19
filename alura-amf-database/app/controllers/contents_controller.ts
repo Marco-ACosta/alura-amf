@@ -10,6 +10,7 @@ import Video from '#models/video'
 import Thumbnail from '#models/thumbnail'
 import Audio from '#models/audio'
 import Article from '#models/article'
+import { getUnixTime } from 'date-fns'
 export default class ContentsController {
   async store({ request, params }: HttpContext) {
     const { type } = params
@@ -27,6 +28,7 @@ export default class ContentsController {
         title: data.title,
         isActive: true,
         releaseDate: DateTime.fromJSDate(data.releaseDate).toUnixInteger(),
+        createAt: getUnixTime(new Date()),
       }
       const content = await Content.create(contentData)
 
@@ -60,6 +62,7 @@ export default class ContentsController {
         title: data.title,
         isActive: true,
         releaseDate: DateTime.fromJSDate(data.releaseDate).toUnixInteger(),
+        createAt: getUnixTime(new Date()),
       }
       const content = await Content.create(contentData)
 
@@ -93,6 +96,7 @@ export default class ContentsController {
         title: data.title,
         isActive: true,
         releaseDate: DateTime.fromJSDate(data.releaseDate).toUnixInteger(),
+        createAt: getUnixTime(new Date()),
       }
       const content = await Content.create(contentData)
 

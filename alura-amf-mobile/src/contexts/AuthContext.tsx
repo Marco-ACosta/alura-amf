@@ -25,6 +25,7 @@ export default function AuthContextComponent({ children }: AuthContextProps) {
     const [ isLogged, setIsLogged ] = useState<boolean>(false)
 
     async function signIn(data: loginBody) {
+        console.log(data)
         const response = await AuthService.Login(data)
         if (response.Success) {
             setIsLogged(true)

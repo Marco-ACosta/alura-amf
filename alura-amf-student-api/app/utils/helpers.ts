@@ -17,4 +17,15 @@ export default {
         .html(html)
     })
   },
+
+  slugfy(text: string) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '')
+  },
 }

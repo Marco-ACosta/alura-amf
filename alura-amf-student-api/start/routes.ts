@@ -11,6 +11,8 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 
 const studentsController = () => import('#controllers/students_controller')
+const videosController = () => import('#controllers/contents_controller')
+const playlistsController = () => import('#controllers/playlists_controller')
 
 router
   .group(() => {
@@ -31,5 +33,25 @@ router
         router.put('/:id/set-password/:code', [studentsController, 'setPassword'])
       })
       .prefix('/student')
+    router
+      .group(() => {
+        router.get('', [videosController, 'index'])
+        router.get('/:id', [videosController, 'show'])
+        router.get('/download/:type/:fileName', [videosController, 'download'])
+      })
+      .prefix('content')
+      .use(middleware.auth({ guards: ['api'] }))
+    router
+      .group(() => {
+        router.post('/', [playlistsController, 'store'])
+        router.get('/:userId', [playlistsController, 'index'])
+        router.get('/:userId/:id', [playlistsController, 'show'])
+        router.put('/:userId/:id', [playlistsController, 'update'])
+        router.post('/:userId/:id/add-content', [playlistsController, 'addContent'])
+        router.post('/:userId/:id/remove-content', [playlistsController, 'removeContent'])
+        router.delete('/:userId/:id', [playlistsController, 'destroy'])
+      })
+      .prefix('playlists')
+      .use(middleware.auth({ guards: ['api'] }))
   })
   .prefix('/api')

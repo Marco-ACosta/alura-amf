@@ -57,7 +57,6 @@ export default class GraduationsController {
       slug: helpers.slugFy(data.name),
     }
     await graduation_service.updateGraduation(params.id, graduationData, data.icon)
-    console.log({ graduationData })
     return { success: [{ message: 'Graduação atualizada com sucesso.', status: 200 }] }
   }
 
