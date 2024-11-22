@@ -18,6 +18,7 @@ import { EditProfile } from "./src/screens/EditProfile";
 import { EditPassword } from "./src/screens/EditPassword";
 import { Contents } from "./src/screens/Contents";
 import ContentDetails from "./src/screens/ContentDetails";
+import { Playlists } from "./src/screens/Playlists";
 
 /** Parâmetros da navegação por tab */
 export type TabNavigationParams = {
@@ -28,6 +29,8 @@ export type TabNavigationParams = {
   EditPassword: undefined;
   Contents: undefined;
   ContentDetails: { id: string };
+  Playlists: undefined;
+  PlaylistsDetails: { id: string };
 };
 
 const Tab = createBottomTabNavigator<TabNavigationParams>();
@@ -117,6 +120,15 @@ const TabNavigator = () => {
           headerShown: false,
         }}
       />
+      <Tab.Screen
+        name="Playlists"
+        component={Playlists}
+        options={{
+          headerLeftLabelVisible: false,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -129,6 +141,7 @@ export type StackNavigationParams = {
   EditProfile: undefined;
   EditPassword: undefined;
   ContentDetails: { id: string };
+  Playlists: undefined;
 };
 
 const Stack = createStackNavigator<StackNavigationParams>();
@@ -179,6 +192,11 @@ const App = () => {
                     <Stack.Screen
                       name="ContentDetails"
                       component={ContentDetails}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="Playlists"
+                      component={Playlists}
                       options={{ headerShown: false }}
                     />
                   </Stack.Navigator>

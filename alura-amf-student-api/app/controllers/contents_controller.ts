@@ -73,12 +73,14 @@ export default class ContentsController {
     const { type, fileName } = params
 
     if (type === 'video') {
+      console.log(fileName)
       const videoPath = path.resolve(
         import.meta.dirname,
         `../../../alura-amf-database/uploads/${type}/${fileName}`
       )
 
       // Lê o arquivo de vídeo completo
+      console.log('teste')
       const videoBuffer = fs.readFileSync(videoPath)
 
       // Define os cabeçalhos apropriados
@@ -86,6 +88,7 @@ export default class ContentsController {
       response.header('Content-Type', 'video/mp4')
 
       // Envia o vídeo como resposta
+      console.log('teste 1')
       response.send(videoBuffer)
     }
 

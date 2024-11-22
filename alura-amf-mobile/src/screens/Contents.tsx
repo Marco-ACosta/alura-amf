@@ -24,7 +24,7 @@ export const Contents: React.FC<{}> = () => {
         }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [setLoading, setContents]);
 
   useEffect(() => {
     getContents();

@@ -21,7 +21,6 @@ export const Login: React.FC<{}> = () => {
   async function handleLogin() {
     if (email && password) {
       const response = await signIn({ email, password });
-      console.log(response);
       if (response.Success) {
         stackNavigation.navigate("Tabs");
       } else {

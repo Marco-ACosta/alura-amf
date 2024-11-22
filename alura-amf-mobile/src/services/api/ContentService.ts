@@ -1,7 +1,7 @@
 import { ContentType, ContentDetailsType } from "../../types/contentTypes";
 import { LocalStorage } from "../../utils/LocalStorage";
 import Endpoints from "./base/Endpoints";
-
+import * as FileSystem from "expo-file-system";
 export default class ContentService extends Endpoints {
   static async GetContents() {
     const token = await LocalStorage.apiToken.get();
@@ -31,16 +31,41 @@ export default class ContentService extends Endpoints {
     if (!token) {
       return null;
     }
-    const response = await Endpoints.Get<Response>({
-      url: imageURl,
-      authorization: `Bearer ${token}`,
+    const response = await fetch(imageURl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-    const blob = await response.Data.blob();
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    reader.onloadend = () => {
-      const uri = reader.result as string;
-      return uri;
-    };
+    return await response.blob();
+  }
+
+  static async downloadVideo(videoURL: string): Promise<string | null> {
+    const token = await LocalStorage.apiToken.get();
+    if (!token) {
+      console.error("Token de autenticação não encontrado.");
+      return null;
+    }
+
+    try {
+      // Diretório temporário para salvar o vídeo
+      const videoPath = `${FileSystem.cacheDirectory}downloaded_video.mp4`;
+
+      const response = await FileSystem.downloadAsync(videoURL, videoPath, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        console.error("Falha no download do vídeo:", response.status);
+        return null;
+      }
+
+      console.log("Vídeo baixado com sucesso:", response.uri);
+      return response.uri; // Retorna o caminho local do vídeo
+    } catch (error) {
+      console.error("Erro ao baixar o vídeo:", error);
+      return null;
+    }
   }
 }

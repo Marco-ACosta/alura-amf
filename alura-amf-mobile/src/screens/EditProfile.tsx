@@ -1,27 +1,18 @@
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { Screen } from "../components/base/Screen";
-import { StackNavigationParams, TabNavigationParams } from "../../App";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { TabNavigationParams } from "../../App";
 import { Alert, StyleSheet, Text, TextInput } from "react-native";
 import Auth from "../components/base/Auth";
 import React from "react";
 import { UserContextProvider } from "../contexts/UserContext";
 import CustomButton from "../components/CustomButton";
-
-type ProfileStackUseNavigationProps = StackNavigationProp<
-  StackNavigationParams,
-  "Tabs"
->;
-type ProfileStackUseRouteProps = RouteProp<StackNavigationParams, "Tabs">;
-
 type ProfileTabUseNavigationProps = BottomTabNavigationProp<
   TabNavigationParams,
   "Home"
 >;
-type ProfileTabUseRouteProps = RouteProp<TabNavigationParams, "Home">;
 
-export const EditProfile: React.FC<{}> = ({}) => {
+export const EditProfile: React.FC<{}> = () => {
   const tabNavigation = useNavigation<ProfileTabUseNavigationProps>();
   const { user, updateUser } = UserContextProvider();
   const [name, setName] = React.useState<string>(user.profile.name);

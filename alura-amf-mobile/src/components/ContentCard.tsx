@@ -4,7 +4,7 @@ import { ContentType } from "../types/contentTypes";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { StackNavigationParams } from "../../App";
-import { LocalStorage } from "../utils/LocalStorage";
+import ContentService from "../services/api/ContentService";
 
 type ContentStackUseNavigationProps = StackNavigationProp<
   StackNavigationParams,
@@ -25,39 +25,27 @@ const ContentCard: React.FC<ContentType> = ({
   const [localImageUri, setLocalImageUri] = useState<string | null>(null);
   const imageURL = `${process.env.EXPO_PUBLIC_API_URL}${thumbnail}`;
 
-  const downloadImage = useCallback(
-    async (token: string) => {
-      try {
-        const response = await fetch(imageURL, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const blob = await response.blob();
+  const downloadImage = useCallback(async () => {
+    try {
+      const response = await ContentService.downloadThumbnail(imageURL);
+      if (response) {
         const reader = new FileReader();
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(response);
         reader.onloadend = () => {
-          const uri = reader.result as string;
-          setLocalImageUri(uri);
+          setLocalImageUri(reader.result as string);
         };
-      } catch (error) {
-        console.error("Failed to download image:", error);
       }
-    },
-    [imageURL],
-  );
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
+  }, [imageURL]);
 
   useEffect(() => {
     const load = async () => {
-      const token = await LocalStorage.apiToken.get();
-      if (!token) {
-        stackNavigation.navigate("Login");
-      }
-      await downloadImage(token!);
+      await downloadImage();
     };
     load();
-  }, [downloadImage, stackNavigation]);
+  }, [downloadImage]);
 
   const handleNavigation = async () => {
     stackNavigation.navigate("ContentDetails", { id });

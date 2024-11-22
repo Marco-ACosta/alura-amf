@@ -7,7 +7,6 @@ export default {
   },
 
   async sendEmail(email: string, subject: string, html: string) {
-    console.log(email, subject, html)
     await mail.use('smtp').send((message) => {
       message
         .to(email)

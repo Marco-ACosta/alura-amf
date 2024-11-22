@@ -21,11 +21,13 @@ export const Home: React.FC<{}> = () => {
   const mangeStudent = useCallback(async () => {
     const id = await LocalStorage.userId.get();
     if (!id) {
+      await LocalStorage.logoff();
       stackNavigation.navigate("Login");
       return;
     } else {
       const response = await getUser(id);
       if (!response) {
+        await LocalStorage.logoff();
         stackNavigation.navigate("Login");
         return;
       }
@@ -43,7 +45,7 @@ export const Home: React.FC<{}> = () => {
       <Screen>
         <View style={styles.container}>
           <Text>Project Template Mobile</Text>
-          <Text>HOME</Text>
+          <Text></Text>
         </View>
       </Screen>
     </Auth>

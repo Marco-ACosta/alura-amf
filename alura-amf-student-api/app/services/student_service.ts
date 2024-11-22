@@ -37,7 +37,6 @@ export default class StudentService implements IStudentService {
 
   async Update(updateProps: UpdateStudentProps, validate = true): Promise<Student> {
     const student = await this.Get(updateProps.id)
-    console.log(student)
     if (!student) throw new CustomException(404, 'Usuário não encontrado.')
     const profileData = {
       name: updateProps.name,
