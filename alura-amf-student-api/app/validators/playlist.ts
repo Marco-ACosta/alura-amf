@@ -44,6 +44,13 @@ export const addContentToPlaylistValidator = vine.compile(
       .uuid({ version: [4] })
       .exists(async (db, value) => {
         return await db.from('contents').where('id', value).first()
+      })
+      .exists(async (db, value, params) => {
+        return !(await db
+          .from('content_playlists')
+          .where('content_id', value)
+          .andWhere('playlist_id', params.data.params.id)
+          .first())
       }),
   })
 )
@@ -55,6 +62,13 @@ export const removeContentFromPlaylistValidator = vine.compile(
       .uuid({ version: [4] })
       .exists(async (db, value) => {
         return await db.from('contents').where('id', value).first()
+      })
+      .exists(async (db, value, params) => {
+        return await db
+          .from('content_playlists')
+          .where('content_id', value)
+          .andWhere('playlist_id', params.data.params.id)
+          .first()
       }),
   })
 )

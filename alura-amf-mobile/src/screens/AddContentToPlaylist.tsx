@@ -1,7 +1,6 @@
-import { Text, StyleSheet, View, Button, FlatList } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import Auth from "../components/base/Auth";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { StackNavigationParams } from "../../App";
 import { Screen } from "../components/base/Screen";
 import { useCallback, useEffect, useState } from "react";
@@ -10,11 +9,11 @@ import PlaylistService from "../services/api/PlaylistService";
 import Loading from "../components/base/Loading";
 import PlaylistCard from "../components/PlaylistCard";
 
-export const Playlists: React.FC<{}> = () => {
+export const AddContentToPlaylist: React.FC<{}> = () => {
+  const { params } =
+    useRoute<RouteProp<StackNavigationParams, "AddContentToPlaylist">>();
   const [playlists, setPlaylist] = useState<PlaylistsType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const navigation =
-    useNavigation<StackNavigationProp<StackNavigationParams>>();
   const GetPlaylists = useCallback(async () => {
     setLoading(true);
     const playlists = await PlaylistService.GetPlaylists();
@@ -35,14 +34,10 @@ export const Playlists: React.FC<{}> = () => {
   if (loading) {
     return <Screen>{Loading()}</Screen>;
   }
-  const createPlaylist = () => {
-    navigation.navigate("AddPlaylist");
-  };
 
   return (
     <Auth>
       <View style={styles.container}>
-        <Text style={styles.title}>Playlists</Text>
         {loading ? (
           <View>{Loading()}</View>
         ) : (
@@ -53,14 +48,13 @@ export const Playlists: React.FC<{}> = () => {
               <PlaylistCard
                 playlist={item}
                 refresh={GetPlaylists}
-                hasButtons={true}
+                hasButtons={false}
+                contentId={params.id}
+                addToPlaylist={true}
               />
             )}
           />
         )}
-        <View style={styles.buttonContainer}>
-          <Button title="Criar Playlist" onPress={createPlaylist} />
-        </View>
       </View>
     </Auth>
   );

@@ -8,11 +8,12 @@ import {
 } from '#validators/playlist'
 import helpers from '../utils/helpers.js'
 import ContentPlaylist from '#models/content_playlist'
+import { format, fromUnixTime } from 'date-fns'
 export default class PlaylistsController {
   /**
    * Handle form submission for the create action
    */
-  async store({ request, auth }: HttpContext) {
+  async store({ request, auth, response }: HttpContext) {
     const user = await auth.authenticate()
     const data = await request.validateUsing(createPlaylistValidator)
     const slug = helpers.slugfy(data.name)
@@ -21,10 +22,10 @@ export default class PlaylistsController {
       slug,
       description: data.description,
       isPublic: data.isPublic ?? false,
-      studentId: user.id,
+      studentsId: user.id,
     }
-    const playlist = await Playlist.create({ ...playlistData })
-    return playlist
+    await Playlist.create({ ...playlistData })
+    return response.json({ success: [{ message: 'Playlist criada com sucesso', status: 201 }] })
   }
 
   /**
@@ -35,13 +36,16 @@ export default class PlaylistsController {
     const user = await auth.authenticate()
     const isStudent = user.id === userId
     const playlists = await Playlist.query()
-      .where('student_id', userId)
+      .where('students_id', userId)
       .if(!isStudent, (query) => {
         query.where('is_public', true)
       })
       .withCount('contents')
 
-    return playlists
+    return playlists.map((playlist) => ({
+      ...playlist.serialize(),
+      contentCount: playlist.$extras.contents_count,
+    }))
   }
 
   /**
@@ -57,20 +61,51 @@ export default class PlaylistsController {
       .where('id', id)
       .preload('contentPlaylists', (query) => {
         query
-          .preload('content', (queryContent) => queryContent.preload('thumbnail'))
+          .preload('content', (queryContent) =>
+            queryContent
+              .preload('article')
+              .preload('audio')
+              .preload('video')
+              .preload('thumbnail', (queryThumbnail) => queryThumbnail.preload('archive'))
+          )
           .orderBy('order', 'asc')
       })
       .firstOrFail()
+
     if (!isStudent && !playlist.isPublic) {
       throw new Error('Playlist is not public')
     }
-    return playlist
+
+    return {
+      id: playlist.id,
+      name: playlist.name,
+      slug: playlist.slug,
+      description: playlist.description,
+      isPublic: playlist.isPublic,
+      studentsId: playlist.studentsId,
+      contentCount: playlist.contentPlaylists.length,
+      contents: playlist.contentPlaylists.map((contentPlaylist) => ({
+        id: contentPlaylist.contentId,
+        order: contentPlaylist.order,
+        type: contentPlaylist.content.type,
+        title: contentPlaylist.content.title,
+        isActive: contentPlaylist.content.isActive,
+        releaseDate: format(fromUnixTime(contentPlaylist.content.releaseDate), 'dd/MM/yyyy'),
+        createdAt: contentPlaylist.content.createdAt,
+        thumbnail: `content/download/thumbnail/${contentPlaylist.content.thumbnail.archive.fileName}`,
+        thumbnailFormat: contentPlaylist.content.thumbnail.format,
+        duration:
+          contentPlaylist.content.type === 'video' || contentPlaylist.content.type === 'audio'
+            ? contentPlaylist.content[`${contentPlaylist.content.type}`].duration
+            : '-',
+      })),
+    }
   }
 
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request, auth }: HttpContext) {
+  async update({ params, request, auth, response }: HttpContext) {
     const { id } = params
     const { userId } = params
     const user = await auth.authenticate()
@@ -102,30 +137,26 @@ export default class PlaylistsController {
         contentPlaylist.merge({ order: contentData?.order ?? contentPlaylist.order }).save()
       })
     }
+
+    return response.json({ success: [{ message: 'Playlist atualizada com sucesso', status: 201 }] })
   }
 
   async addContent({ request, params }: HttpContext) {
     const { id } = params
     const data = await request.validateUsing(addContentToPlaylistValidator)
+
     const lastContent = await ContentPlaylist.query()
       .where('playlist_id', id)
       .orderBy('order', 'desc')
       .first()
 
-    const isOnPlaylist = await ContentPlaylist.query()
-      .where('playlist_id', id)
-      .where('content_id', data.contentId)
-      .first()
-
-    if (isOnPlaylist) {
-      throw new Error('Conteudo ja esta na playlist')
-    }
-
     await ContentPlaylist.create({
-      id,
       contentId: data.contentId,
       order: lastContent ? lastContent.order + 1 : 1,
+      playlistId: id,
     })
+
+    return { success: [{ message: 'Conteúdo adicionado na playlist com sucesso', status: 201 }] }
   }
 
   async removeContent({ request, params }: HttpContext) {
@@ -146,6 +177,8 @@ export default class PlaylistsController {
     })
 
     await contentPlaylist.delete()
+
+    return { success: [{ message: 'Conteúdo removido da playlist com sucesso', status: 201 }] }
   }
 
   /**

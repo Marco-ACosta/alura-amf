@@ -21,12 +21,15 @@ export default class Playlist extends BaseModel {
   declare isPublic: boolean
 
   @column()
-  declare studentId: string
+  declare studentsId: string
 
   @belongsTo(() => Student)
   declare student: BelongsTo<typeof Student>
 
-  @hasManyThrough([() => Content, () => ContentPlaylist])
+  @hasManyThrough([() => Content, () => ContentPlaylist], {
+    throughForeignKey: 'id',
+    throughLocalKey: 'contentId',
+  })
   declare contents: HasManyThrough<typeof Content>
 
   @hasMany(() => ContentPlaylist)

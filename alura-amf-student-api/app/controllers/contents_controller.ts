@@ -1,8 +1,9 @@
 import Content from '#models/content'
 import type { HttpContext } from '@adonisjs/core/http'
-import { getUnixTime } from 'date-fns'
+import { format, fromUnixTime, getUnixTime } from 'date-fns'
 import fs from 'node:fs'
 import path from 'node:path'
+import helpers from '../utils/helpers.js'
 
 export default class ContentsController {
   /**
@@ -25,11 +26,12 @@ export default class ContentsController {
       title: content.title,
       isActive: content.isActive,
       createdAt: content.createdAt,
+      releaseDate: format(fromUnixTime(content.releaseDate), 'dd/MM/yyyy'),
       thumbnail: `content/download/thumbnail/${content.thumbnail.archive.fileName}`,
       thumbnailFormat: content.thumbnail.format,
       duration:
         content.type === 'video' || content.type === 'audio'
-          ? content[`${content.type}`].duration
+          ? helpers.formatDuration(content[`${content.type}`].duration)
           : '-',
     }))
   }
@@ -63,6 +65,7 @@ export default class ContentsController {
       title: content.title,
       isActive: content.isActive,
       createdAt: content.createdAt,
+      releaseDate: format(fromUnixTime(content.releaseDate), 'dd/MM/yyyy'),
       thumbnail: `content/download/thumbnail/${content.thumbnail.archive.fileName}`,
       thumbnailFormat: content.thumbnail.format,
       ...contentData,
@@ -73,14 +76,12 @@ export default class ContentsController {
     const { type, fileName } = params
 
     if (type === 'video') {
-      console.log(fileName)
       const videoPath = path.resolve(
         import.meta.dirname,
         `../../../alura-amf-database/uploads/${type}/${fileName}`
       )
 
       // Lê o arquivo de vídeo completo
-      console.log('teste')
       const videoBuffer = fs.readFileSync(videoPath)
 
       // Define os cabeçalhos apropriados
@@ -88,7 +89,6 @@ export default class ContentsController {
       response.header('Content-Type', 'video/mp4')
 
       // Envia o vídeo como resposta
-      console.log('teste 1')
       response.send(videoBuffer)
     }
 

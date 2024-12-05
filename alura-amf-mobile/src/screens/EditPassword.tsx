@@ -1,12 +1,11 @@
 import { Screen } from "../components/base/Screen";
 import Auth from "../components/base/Auth";
-import { Alert, StyleSheet, Text, TextInput } from "react-native";
+import { Alert, Button, StyleSheet, Text, TextInput } from "react-native";
 import { useState } from "react";
 import { UserContextProvider } from "../contexts/UserContext";
 import { TabNavigationParams } from "../../App";
 import { useNavigation } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import CustomButton from "../components/CustomButton";
 
 type ProfileTabUseNavigationProps = BottomTabNavigationProp<
   TabNavigationParams,
@@ -40,31 +39,29 @@ export const EditPassword: React.FC<{}> = () => {
   return (
     <Auth>
       <Screen>
-        <Text style={styles.info}>Senha Atual:</Text>
+        <Text style={styles.title}>Editar Senha</Text>
         <TextInput
-          style={styles.info}
+          style={styles.input}
           placeholder="Senha Atual"
           onChangeText={setCurrentPassword}
           value={currentPassword}
         />
 
-        <Text style={styles.info}>Nova Senha:</Text>
         <TextInput
-          style={styles.info}
+          style={styles.input}
           placeholder="Nova Senha"
           onChangeText={setNewPassword}
           value={newPassword}
         />
 
-        <Text style={styles.info}>Confirmar Nova Senha:</Text>
         <TextInput
-          style={styles.info}
+          style={styles.input}
           placeholder="Confirmar Nova Senha"
           onChangeText={setConfirmPassword}
           value={confirmPassword}
         />
 
-        <CustomButton title="Salvar" onPress={handleSave} />
+        <Button title="Salvar" onPress={handleSave} />
       </Screen>
     </Auth>
   );
@@ -72,18 +69,14 @@ export const EditPassword: React.FC<{}> = () => {
 
 const styles = StyleSheet.create({
   title: {
-    flex: 1,
-    width: "100%",
-    maxHeight: "5%",
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 24,
+    marginBottom: 20,
   },
-  info: {
-    flex: 1,
-    textAlign: "center",
-    width: "100%",
-    fontSize: 15,
-    maxHeight: 50,
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
 });

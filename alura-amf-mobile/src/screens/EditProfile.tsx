@@ -1,12 +1,12 @@
+import { View, Text, TextInput, StyleSheet, Button } from "react-native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { Screen } from "../components/base/Screen";
 import { TabNavigationParams } from "../../App";
-import { Alert, StyleSheet, Text, TextInput } from "react-native";
+import { Alert } from "react-native";
 import Auth from "../components/base/Auth";
-import React from "react";
+import React, { useState } from "react";
 import { UserContextProvider } from "../contexts/UserContext";
-import CustomButton from "../components/CustomButton";
 type ProfileTabUseNavigationProps = BottomTabNavigationProp<
   TabNavigationParams,
   "Home"
@@ -15,9 +15,9 @@ type ProfileTabUseNavigationProps = BottomTabNavigationProp<
 export const EditProfile: React.FC<{}> = () => {
   const tabNavigation = useNavigation<ProfileTabUseNavigationProps>();
   const { user, updateUser } = UserContextProvider();
-  const [name, setName] = React.useState<string>(user.profile.name);
-  const [lastName, setLastName] = React.useState<string>(user.profile.lastName);
-  const [phone, setPhone] = React.useState<string>(user.profile.phone);
+  const [name, setName] = useState<string>(user.profile.name);
+  const [lastName, setLastName] = useState<string>(user.profile.lastName);
+  const [phone, setPhone] = useState<string>(user.profile.phone);
   const handleSave = async () => {
     if (name && lastName && phone) {
       const data = {
@@ -40,51 +40,55 @@ export const EditProfile: React.FC<{}> = () => {
   return (
     <Auth>
       <Screen>
-        <Text style={styles.title}>Editar Perfil</Text>
-        <Text style={styles.info}>Nome:</Text>
-        <TextInput
-          style={styles.info}
-          placeholder="Nome"
-          value={name}
-          onChangeText={setName}
-        />
-
-        <Text> Sobrenome: </Text>
-        <TextInput
-          style={styles.info}
-          placeholder="Sobrenome"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-
-        <Text> Telefone </Text>
-        <TextInput
-          style={styles.info}
-          placeholder="Telefone"
-          value={phone}
-          onChangeText={setPhone}
-        />
-
-        <CustomButton title="Salvar" onPress={() => handleSave()} />
+        <View style={styles.container}>
+          <Text style={styles.title}>Editar Perfil</Text>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: Jo o"
+            value={name}
+            onChangeText={setName}
+          />
+          <Text style={styles.label}>Sobrenome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: da Silva"
+            value={lastName}
+            onChangeText={setLastName}
+          />
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: (11) 98888-8888"
+            value={phone}
+            onChangeText={setPhone}
+          />
+          <Button title="Salvar" onPress={() => handleSave()} />
+        </View>
       </Screen>
     </Auth>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
+  container: {
     flex: 1,
-    width: "100%",
-    maxHeight: "5%",
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
+    padding: 20,
+    paddingTop: 100,
   },
-  info: {
-    flex: 1,
-    textAlign: "center",
-    width: "100%",
-    fontSize: 15,
-    maxHeight: 50,
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    marginBottom: 10,
   },
 });

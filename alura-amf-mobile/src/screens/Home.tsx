@@ -43,9 +43,9 @@ export const Home: React.FC<{}> = () => {
   return (
     <Auth>
       <Screen>
-        <View style={styles.container}>
-          <Text>Project Template Mobile</Text>
-          <Text></Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>Project Template Mobile</Text>
+          <Text style={styles.info}></Text>
         </View>
       </Screen>
     </Auth>
@@ -53,10 +53,25 @@ export const Home: React.FC<{}> = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  info: {
+    textAlign: "center",
+    width: "100%",
+    fontSize: 15,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
   },
 });

@@ -19,6 +19,10 @@ import { EditPassword } from "./src/screens/EditPassword";
 import { Contents } from "./src/screens/Contents";
 import ContentDetails from "./src/screens/ContentDetails";
 import { Playlists } from "./src/screens/Playlists";
+import { AddPlaylist } from "./src/screens/AddPlaylist";
+import PlaylistDetails from "./src/screens/PlaylistDetails";
+import { AddContentToPlaylist } from "./src/screens/AddContentToPlaylist";
+import EditPlaylist from "./src/screens/EditPlaylist";
 
 /** Parâmetros da navegação por tab */
 export type TabNavigationParams = {
@@ -30,7 +34,10 @@ export type TabNavigationParams = {
   Contents: undefined;
   ContentDetails: { id: string };
   Playlists: undefined;
-  PlaylistsDetails: { id: string };
+  PlaylistDetails: { id: string };
+  AddPlaylist: undefined;
+  AddContentToPlaylist: { id: string };
+  EditPlaylist: { id: string };
 };
 
 const Tab = createBottomTabNavigator<TabNavigationParams>();
@@ -129,6 +136,42 @@ const TabNavigator = () => {
           headerShown: false,
         }}
       />
+      <Tab.Screen
+        name="AddPlaylist"
+        component={AddPlaylist}
+        options={{
+          headerLeftLabelVisible: false,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="PlaylistDetails"
+        component={PlaylistDetails}
+        options={{
+          headerLeftLabelVisible: false,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="AddContentToPlaylist"
+        component={AddContentToPlaylist}
+        options={{
+          headerLeftLabelVisible: false,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="EditPlaylist"
+        component={EditPlaylist}
+        options={{
+          headerLeftLabelVisible: false,
+          tabBarButton: () => null,
+          headerShown: false,
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -142,6 +185,11 @@ export type StackNavigationParams = {
   EditPassword: undefined;
   ContentDetails: { id: string };
   Playlists: undefined;
+  AddPlaylist: undefined;
+  PlaylistDetails: { id: string };
+  AddContentToPlaylist: { id: string };
+  Contents: undefined;
+  EditPlaylist: { id: string };
 };
 
 const Stack = createStackNavigator<StackNavigationParams>();
@@ -175,6 +223,11 @@ const App = () => {
                       options={{ headerShown: false }}
                     />
                     <Stack.Screen
+                      name="Contents"
+                      component={Contents}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
                       name="Login"
                       component={Login}
                       options={{ headerShown: false }}
@@ -197,6 +250,26 @@ const App = () => {
                     <Stack.Screen
                       name="Playlists"
                       component={Playlists}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="AddPlaylist"
+                      component={AddPlaylist}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="PlaylistDetails"
+                      component={PlaylistDetails}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="AddContentToPlaylist"
+                      component={AddContentToPlaylist}
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="EditPlaylist"
+                      component={EditPlaylist}
                       options={{ headerShown: false }}
                     />
                   </Stack.Navigator>

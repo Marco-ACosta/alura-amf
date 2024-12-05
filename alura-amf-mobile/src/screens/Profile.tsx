@@ -3,14 +3,14 @@ import { useNavigation } from "@react-navigation/native";
 import { Screen } from "../components/base/Screen";
 import { StackNavigationParams } from "../../App";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { Alert, StyleSheet, Text } from "react-native";
+import { Alert, Button, StyleSheet, Text, View } from "react-native";
 import Auth from "../components/base/Auth";
 import React from "react";
 import { UserContextProvider } from "../contexts/UserContext";
 import { AuthContextProvider } from "../contexts/AuthContext";
-import CustomButton from "../components/CustomButton";
 import { LocalStorage } from "../utils/LocalStorage";
 import { UserData } from "../types/userTypes";
+import Loading from "../components/base/Loading";
 
 type ProfileStackUseNavigationProps = StackNavigationProp<
   StackNavigationParams,
@@ -73,55 +73,84 @@ export const Profile: React.FC<{}> = () => {
   return (
     <Auth>
       <Screen>
-        {userData ? (
-          <>
-            <Text style={styles.title}>
-              {user.profile.name} {user.profile.lastName}
-            </Text>
-            <Text style={styles.info}>RA: {user?.academicRegister}</Text>
-            <Text style={styles.info}>Email: {user?.email}</Text>
-            <Text style={styles.info}>Telefone: {user?.profile.phone}</Text>
-            <Text style={styles.info}>CPF {user?.cpf}</Text>
-          </>
-        ) : (
-          <Text>Carregando...</Text>
-        )}
+        <View style={styles.content}>
+          {userData ? (
+            <>
+              <Text style={styles.title}>
+                {user.profile.name} {user.profile.lastName}
+              </Text>
+              <Text style={styles.info}>RA: {user?.academicRegister}</Text>
+              <Text style={styles.info}>Email: {user?.email}</Text>
+              <Text style={styles.info}>Telefone: {user?.profile.phone}</Text>
+              <Text style={styles.info}>CPF {user?.cpf}</Text>
 
-        <CustomButton
-          title="Editar"
-          onPress={() => stackNavigation.navigate("EditProfile")}
-        />
-
-        <CustomButton
-          title="Editar senha"
-          onPress={() => stackNavigation.navigate("EditPassword")}
-        />
-
-        <CustomButton
-          title="Playlists"
-          onPress={() => stackNavigation.navigate("Playlists")}
-        />
-
-        <CustomButton title="Sair" onPress={() => handleLogOut()} />
+              <View style={styles.buttonContainer}>
+                <View style={styles.buttonRow}>
+                  <View style={styles.button}>
+                    <Button
+                      title="Editar"
+                      onPress={() => stackNavigation.navigate("EditProfile")}
+                    />
+                  </View>
+                  <View style={styles.button}>
+                    <Button
+                      title="Editar senha"
+                      onPress={() => stackNavigation.navigate("EditPassword")}
+                    />
+                  </View>
+                </View>
+                <View style={styles.buttonRow}>
+                  <View style={styles.button}>
+                    <Button
+                      title="Playlists"
+                      onPress={() => stackNavigation.navigate("Playlists")}
+                    />
+                  </View>
+                  <View style={styles.button}>
+                    <Button title="Sair" onPress={() => handleLogOut()} />
+                  </View>
+                </View>
+              </View>
+            </>
+          ) : (
+            <Screen>{Loading()}</Screen>
+          )}
+        </View>
       </Screen>
     </Auth>
   );
 };
 
 const styles = StyleSheet.create({
-  title: {
+  content: {
     flex: 1,
-    width: "100%",
-    maxHeight: "5%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
     textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
   },
   info: {
-    flex: 1,
-    textAlign: "center",
+    textAlign: "left",
     width: "100%",
     fontSize: 15,
-    maxHeight: 50,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    marginTop: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  button: {
+    width: "48%",
+    marginBottom: 10,
   },
 });
