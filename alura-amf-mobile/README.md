@@ -1,51 +1,37 @@
-# Modelo de Projeto Frontend Mobile em React Native TS com EXPO
+# Projeto Template para Mobile
+## EXPO SDK 52
 
-## Navegações implementadas
-- Navegação por Drawer;
-- Navegação por Stack;
-- Navegação por Tab;
+Clone o projeto e modifique as implementações já existentes conforme necessidade de sua aplicação.
+Procure por "TODO" no projeto.
 
-Todas as navegações podem ser modificadas, trocadas ou eliminadas.
+## Funcionalidades
 
-## Componentes customizáveis
-- Componente customizável para botão;
-- Componente customizável para imagem;
-- Componente customizável para modal;
-- Componente customizável para tela;
-- Componente de loading;
-- Tela pré definida para administrador;
-- Tela pré definida para home;
+- Contexto para ações iniciais (InitialContext);
+- Contexto para autenticação (AuthContext);
+- Contexto para sincronização (SyncContext);
+- Base de dados local (SQLite);
+- Classe gerenciadora de requisições com fetch (Endpoints);
+- Buscador de variáveis de ambiente (Env);
+- Componentes:
+  - Autenticação de rota (AuthRoute);
+  - Botão ativador de biometria ou senha do dispositivo;
+  - Tela padrão (Screen);
+  - Datagrid;
+  - Loading padrão;
+  - Modal;
+  - Texto em negrito;
+  - Câmera;
+  - Botão;
+  - Imagem local e externa;
+  - Input;
+  - Switch;
+  - Switch nulo;
+  - Picker;
+  - Picker de data;
+  - Picker de hora;
+- Rotas de exemplo pré implementadas;
+  - Rotas com navegação por drawer, tabs e stack: **branch drawer**;
+  - Rotas com navegação por tabs e stack: **branch tabs**;
+  - Rotas com navegação por stack: **branch stack**;
 
-Os componentes customizáveis são de uso pronto e genérico.
-A tela de administrador possui exemplo de controle de autenticação.
-
-## Contexts implementados
-- Context de início da aplicação;
-  - Completamente customizável para as regras de negócio da aplicação;
-  - Não interfere se não usado;
-- Context de autenticação;
-  - State para controle de login;
-  - Pode-se utilizar useTransaction para lidar com renderizações desnecessárias;
-  - Não interfere se não usado;
-- Context de sincronização;
-  - Possui REFs para controle de conectividade e verificação de sincronização;
-  - Não interfere se não usado;
-
-## Funcionalidades para backend, base de dados, async storage e env
-- Banco de dados sqlite local;
-  - Possui controlador de versão;
-- Buscador de variáveis de ambiente;
-- Controlador do AsyncStorage;
-- Firebase;
-- Service customizada para backend da aplicação;
-  - Extende a classe "Endpoints" que possui métodos implementados para todas as requisições base;
-  - Possui "ServiceExample.ts.example" para exemplo de utilização
-
-## Funcionalidades e utilidades
-- Botão acionador de câmera;
-- Botão de autenticação por biometria / PIN;
-- Controlador para rotas autenticadas;
-  - **Necessita de ajustes conforme as regras de negócio da aplicação!**
-- Enviador de notificação local;
-- Função especializada na captura de informações de conectividade;
-- Função verificadora de valores nulos / indefinidos;
+### Desenvolvido por Raisson Souza
